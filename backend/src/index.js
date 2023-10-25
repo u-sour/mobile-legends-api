@@ -34,7 +34,7 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 
 // Set application/json response
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Middleware for cookies
 app.use(cookieParser());
@@ -42,7 +42,7 @@ app.use(cookieParser());
 app.use(authenticationMiddleware);
 
 // Static Frontend File
-app.use(express.static(path.resolve(__dirname, '../public')))
+// app.use(express.static(path.resolve(__dirname, '../public')))
 
 // Default error
 app.use(errorHandlerMiddleware);
@@ -65,7 +65,10 @@ if (process.env.PROJECT_MODE === 'Production') {
 
 // Routes
 import router from "./routes/api/auth";
-app.use("/api/v1", router);
+import heroRouter from "./routes/api/heroes"
+import heroRolesRouter from "./routes/api/hero_roles"
+import heroSpecialtiesRouter from "./routes/api/hero_specialties"
+app.use("/api/v1", router, heroRouter, heroRolesRouter, heroSpecialtiesRouter);
 
 // 404 Not Found
 app.all("*", (req, res) => {

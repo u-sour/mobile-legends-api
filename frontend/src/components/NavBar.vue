@@ -1,8 +1,8 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
+    <div class="container-xxl">
       <RouterLink :to="{ name: 'home' }" class="navbar-brand"
-        ><img src="./../../public/favicon.ico" alt="mevn"
+        ><img src="/favicon.ico" alt="mevn"
       /></RouterLink>
       <button
         class="navbar-toggler"
@@ -17,10 +17,10 @@
       </button>
       <div class="collapse navbar-collapse" id="appNavbar">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <RouterLink :to="{ name: 'home' }" class="nav-link active" aria-current="page"
-              >Home</RouterLink
-            >
+          <li class="nav-item" v-for="route in getRoutes" :key="route.name">
+            <RouterLink :to="{ name: route.name }" class="nav-link active" aria-current="page">{{
+              route.meta.pageTitle
+            }}</RouterLink>
           </li>
         </ul>
         <ul class="navbar-nav mx-2 mb-2 mb-lg-0">
@@ -63,14 +63,27 @@
 </template>
 
 <script setup lang="ts">
+import routes from '@/router/routes'
 import { useAuthStore } from '@/stores/auth'
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const username = computed(() => authStore.userDetail.username)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
+
+// get routes
+const getRoutes = ref<any>([])
+watchEffect(() => {
+  getRoutes.value = routes.filter(
+    (r) =>
+      r.name === 'home' ||
+      (r.name === 'heroes' && isAuthenticated.value) ||
+      (r.name === 'hero-roles' && isAuthenticated.value) ||
+      (r.name === 'hero-specialties' && isAuthenticated.value)
+  )
+})
 
 const logout = async () => {
   await authStore

@@ -11,7 +11,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main>Home page</main>
+  <div id="home">
+    <div class="container mt-5">Home page</div>
+  </div>
 </template>
 
 <style></style>

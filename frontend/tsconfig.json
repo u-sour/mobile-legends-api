@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+    "types": [
+      "vue3-toastify/global"
+    ]
+  },
   "files": [],
   "references": [
     {
