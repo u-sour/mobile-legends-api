@@ -8,12 +8,14 @@ const router = express.Router()
 let cache = apicache.middleware
 
 if (process.env.PROJECT_MODE === 'Production') {
-    router.get('/hero-specialties/specialty/:id', cache("5 minutes"), heroSpecialtiesController.findOne)
-    router.get('/hero-specialties/:selector?', cache("5 minutes"), heroSpecialtiesController.find)
+    router.get('/hero-specialties/public/id/:id', cache("5 minutes"), heroSpecialtiesController.findAsPublic)
+    router.get('/hero-specialties/public', cache("5 minutes"), heroSpecialtiesController.findAsPublic)
 } else {
-    router.get('/hero-specialties/specialty/:id', heroSpecialtiesController.findOne)
-    router.get('/hero-specialties/:selector?', heroSpecialtiesController.find)
+    router.get('/hero-specialties/public/id/:id', heroSpecialtiesController.findAsPublic)
+    router.get('/hero-specialties/public', heroSpecialtiesController.findAsPublic)
 }
+router.get('/hero-specialties', authMiddleware, heroSpecialtiesController.find)
+router.get('/hero-specialties/:id', authMiddleware, heroSpecialtiesController.findOne)
 router.post('/hero-specialties', authMiddleware, heroSpecialtiesController.create)
 router.patch('/hero-specialties/:id', authMiddleware, heroSpecialtiesController.edit)
 router.delete('/hero-specialties/:id', authMiddleware, heroSpecialtiesController.delete)

@@ -12,6 +12,7 @@
             label="Code"
             validation="required"
             autocomplete="off"
+            disabled
           />
         </div>
         <div class="col-12 col-md-4 col-lg-4">

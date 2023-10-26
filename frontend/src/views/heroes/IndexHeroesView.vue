@@ -1,6 +1,16 @@
 <template>
   <div id="index-hero">
-    <EasyDataTable show-index :headers="headers" :items="items" :loading="loading">
+    <FormKit type="text" prefix-icon="search" v-model="search" placeholder="Search..." />
+    <!-- <button class="btn btn-primary" @click="insertSimpleData">Simple Data</button> -->
+
+    <EasyDataTable
+      show-index
+      :headers="headers"
+      :items="items"
+      :search-field="searchField"
+      :search-value="search"
+      :loading="loading"
+    >
       <template #loading>
         <EasyDataTableLoading />
       </template>
@@ -57,7 +67,13 @@ import EasyDataTableLoading from '@/components/EasyDataTableLoading.vue'
 import EasyDataTableActions from '@/components/EasyDataTableActions.vue'
 import { toast } from 'vue3-toastify'
 import AlertMessage from '@/utils/alert-message'
+import ImageNotFound from '@/components/ImageNotFound.vue'
 import { useRouter } from 'vue-router'
+import { FormKit } from '@formkit/vue'
+// import data from '@/utils/simple-data.json'
+
+const searchField = ['name', 'code']
+const search = ref()
 
 const router = useRouter()
 const loading = ref(true)
@@ -73,7 +89,7 @@ const headers: Header[] = [
 
 const items = ref<Item[]>([])
 onMounted(async () => {
-  items.value = await HeroesMethod.findWithAggregate()
+  items.value = await HeroesMethod.find()
   loading.value = false
 })
 
@@ -93,6 +109,17 @@ const deleteItem = async (val: Hero) => {
       toast.error(err.data.message)
     })
 }
+
+// const insertSimpleData = async () => {
+//   for (let index = 0; index < data.length; index++) {
+//     const d = data[index]
+//     try {
+//       await HeroesMethod.create(d)
+//     } catch (error) {
+//       console.log(error)
+//     }
+//   }
+// }
 </script>
 
 <style scoped></style>

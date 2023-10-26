@@ -1,6 +1,12 @@
 <template>
   <div id="create-heroes">
-    <FormKit type="form" id="create-heroes" v-model="formData" @submit="submit">
+    <FormKit
+      type="form"
+      id="create-heroes"
+      v-model="formData"
+      @submit="submit"
+      :disabled="disabled"
+    >
       <div class="row">
         <div class="col-12 col-md-4 col-lg-4">
           <FormKit
@@ -12,6 +18,7 @@
             label="Code"
             validation="required"
             autocomplete="off"
+            disabled
           />
         </div>
         <div class="col-12 col-md-4 col-lg-4">
@@ -629,7 +636,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { type Option, SelectOptions } from '@/utils/select-options'
 import StaticSelectOptions from '@/utils/static-select-options'
 import { reset } from '@formkit/core'
@@ -642,7 +649,6 @@ import compressor from '@/utils/compressor'
 import ImagePreview from '@/components/ImagePreview.vue'
 import AlertMessage from '@/utils/alert-message'
 import moment from 'moment'
-import { onMounted } from 'vue'
 
 const formData = ref<Hero>({
   code: '',
@@ -667,14 +673,18 @@ const formData = ref<Hero>({
   ]
 })
 const submitted = ref<boolean>(false)
+const disabled = ref(false)
 
 //options
 const roleOptions = ref<Array<Option>>([])
 const specialtyOptions = ref<Array<Option>>([])
 
 onMounted(async () => {
+  disabled.value = true
   roleOptions.value = await SelectOptions.roleOptions()
   specialtyOptions.value = await SelectOptions.specialtyOptions()
+  formData.value.code = await HeroesMethod.count()
+  disabled.value = false
 })
 
 const addSkins = () => {
@@ -750,10 +760,11 @@ const submit = async (value: Hero) => {
     }
   }
   await HeroesMethod.create(value)
-    .then(() => {
+    .then(async () => {
       submitted.value = true
-      reset('create-heroes')
       toast.success(AlertMessage.createSuccess)
+      reset('create-heroes')
+      formData.value.code = await HeroesMethod.count()
     })
     .catch((err) => toast.error(err.message))
 }

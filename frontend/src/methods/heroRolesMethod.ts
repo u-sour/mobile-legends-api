@@ -1,4 +1,4 @@
-import { useAPI, useAPIPrivate } from '@/composables/useApi'
+import { useAPIPrivate } from '@/composables/useApi'
 import ConvertFile from '@/utils/convert-file'
 /* 
   Note: 
@@ -24,7 +24,7 @@ export interface HeroRole {
 export const HeroRolesMethod = {
   findOne: async (_id: string | string[]) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/hero-roles/role/${_id}`)
+      const { data } = await useAPIPrivate().get(`/api/v1/hero-roles/${_id}`)
       // get & set icon_file
       const iconFile = await ConvertFile.fromUrl(data.icon_url, data.icon_file_name)
       data.icon_file = [{ name: data.icon_file_name, file: iconFile }]
@@ -33,9 +33,11 @@ export const HeroRolesMethod = {
       throw error.response
     }
   },
-  find: async (selector?: object) => {
+  find: async (selector: object) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/hero-roles/${JSON.stringify(selector || {})}`)
+      const { data } = await useAPIPrivate().get(
+        `/api/v1/hero-roles?selector=${JSON.stringify(selector || {})}`
+      )
       return data
     } catch (error: Error | any) {
       throw error.response
