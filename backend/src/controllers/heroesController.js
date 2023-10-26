@@ -1,8 +1,26 @@
 import Heroes from "../models/Heroes"
 import cloudinary from "../config/cloudinary"
 import AlertMessage from "../utils/alert-message"
-
+import mongoose from "mongoose"
+const { ObjectId } = mongoose.Types;
 const heroesController = {
+    count: async (req, res) => {
+        try {
+            let index = 1
+            let sort = { code: -1 }
+            const hero = await Heroes.find({}, sort)
+
+            if (hero.length > 1) {
+                index += hero.length
+                console.log("🚀 ~ file: heroesController.js:16 ~ count: ~ index:", index)
+            }
+
+            return res.status(200).json({ index: index });
+        } catch (error) {
+            console.log("🚀 ~ file: heroesController.js:21 ~ count: ~ error:", error)
+            return res.status(400).json({ message: error });
+        }
+    },
     findOne: async (req, res) => {
         try {
             const _id = req.params.id
@@ -14,16 +32,18 @@ const heroesController = {
     },
     find: async (req, res) => {
         try {
-            const selector = JSON.parse(req.params.selector)
+            const selector = {}
             const heroes = await Heroes.find(selector)
             return res.status(200).json(heroes);
         } catch (error) {
+            console.log("🚀 ~ file: heroesController.js:22 ~ find: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
-    findWithAggregate: async (req, res) => {
+    findAsPublic: async (req, res) => {
         try {
-            const selector = JSON.parse(req.params.selector)
+            const selector = {}
+            if (req.params.id) selector['_id'] = new ObjectId(req.params.id)
             let pipeline = [
                 { $match: selector },
                 { $unwind: { path: "$roleIds", preserveNullAndEmptyArrays: true, } },
@@ -32,6 +52,9 @@ const heroesController = {
                         from: "hero_roles",
                         localField: "roleIds",
                         foreignField: "_id",
+                        pipeline: [
+                            { $project: { name: 1, status: 1 } }
+                        ],
                         as: "roleIds"
                     }
                 },
@@ -58,6 +81,9 @@ const heroesController = {
                         from: "hero_specialties",
                         localField: "specialtyIds",
                         foreignField: "_id",
+                        pipeline: [
+                            { $project: { name: 1, type: 1, status: 1 } }
+                        ],
                         as: "specialtyIds"
                     }
                 },
@@ -80,9 +106,9 @@ const heroesController = {
                 }
             ]
             const heroes = await Heroes.aggregate(pipeline)
-            console.log("🚀 ~ file: heroesController.js:83 ~ findWithAggregate: ~ heroes:", heroes)
             return res.status(200).json(heroes);
         } catch (error) {
+            console.log("🚀 ~ file: heroesController.js:85 ~ findWithAggregate: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -90,17 +116,19 @@ const heroesController = {
         try {
             const data = req.body;
             const folderName = `Hero Skins: ${data.code} - ${data.name}`
-            for (let index = 0; index < data.skins.length; index++) {
-                const skin = data.skins[index];
-                const iconUploaded = await cloudinary.uploader.upload(skin.icon_base, { folder: folderName })
-                const splashArtUploaded = await cloudinary.uploader.upload(skin.splash_art_base, { folder: folderName })
+            if (data.skills) {
+                for (let index = 0; index < data.skins.length; index++) {
+                    const skin = data.skins[index];
+                    const iconUploaded = await cloudinary.uploader.upload(skin.icon_base, { folder: folderName })
+                    const splashArtUploaded = await cloudinary.uploader.upload(skin.splash_art_base, { folder: folderName })
 
-                skin.icon_public_id = iconUploaded.public_id
-                skin.icon_url = iconUploaded.secure_url
-                skin.icon_file_name = skin.icon_file_name
-                skin.splash_art_public_id = splashArtUploaded.public_id
-                skin.splash_art_url = splashArtUploaded.secure_url
-                skin.splash_art_file_name = skin.splash_art_file_name
+                    skin.icon_public_id = iconUploaded.public_id
+                    skin.icon_url = iconUploaded.secure_url
+                    skin.icon_file_name = skin.icon_file_name
+                    skin.splash_art_public_id = splashArtUploaded.public_id
+                    skin.splash_art_url = splashArtUploaded.secure_url
+                    skin.splash_art_file_name = skin.splash_art_file_name
+                }
             }
             await Heroes.create(data)
             return res.sendStatus(201);

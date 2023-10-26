@@ -82,9 +82,17 @@ export interface HeroAttribute {
 }
 
 export const HeroesMethod = {
+  count: async () => {
+    try {
+      const { data } = await useAPIPrivate().get(`/api/v1/heroes/count`)
+      return data.index
+    } catch (error: Error | any) {
+      throw error.response
+    }
+  },
   findOne: async (_id: string | string[]) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/heroes/hero/${_id}`)
+      const { data } = await useAPIPrivate().get(`/api/v1/heroes/${_id}`)
       data.release_year = `${data.release_year}-01-01`
       // get & set icon_file & splash_art_file
       for (let index = 0; index < data.skins.length; index++) {
@@ -106,7 +114,7 @@ export const HeroesMethod = {
   },
   find: async (selector?: object) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/heroes/${JSON.stringify(selector || {})}`)
+      const { data } = await useAPIPrivate().get(`/api/v1/heroes`)
       return data
     } catch (error: Error | any) {
       throw error.response
@@ -114,7 +122,7 @@ export const HeroesMethod = {
   },
   findWithAggregate: async (selector?: object) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/pub-heroes/${JSON.stringify(selector || {})}`)
+      const { data } = await useAPI().get(`/api/v1/heroes/pub/`)
       return data
     } catch (error: Error | any) {
       throw error.response

@@ -1,5 +1,7 @@
 import HeroSpecialties from "../models/HeroSpecialties"
 import AlertMessage from "../utils/alert-message"
+import mongoose from "mongoose"
+const { ObjectId } = mongoose.Types;
 
 const heroSpecialtiesController = {
     findOne: async (req, res) => {
@@ -13,8 +15,18 @@ const heroSpecialtiesController = {
     },
     find: async (req, res) => {
         try {
-            const selector = JSON.parse(req.params.selector)
+            let selector = JSON.parse(req.query.selector)
             const heroSpecialties = await HeroSpecialties.find(selector)
+            return res.status(200).json(heroSpecialties);
+        } catch (error) {
+            return res.status(400).json({ message: error });
+        }
+    },
+    findAsPublic: async (req, res) => {
+        try {
+            const selector = {}
+            if (req.params.id) selector['_id'] = new ObjectId(req.params.id)
+            const heroSpecialties = await HeroSpecialties.find(selector, { __v: 0, created_at: 0, updated_at: 0 })
             return res.status(200).json(heroSpecialties);
         } catch (error) {
             return res.status(400).json({ message: error });

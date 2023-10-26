@@ -1,4 +1,4 @@
-import { useAPI, useAPIPrivate } from '@/composables/useApi'
+import { useAPIPrivate } from '@/composables/useApi'
 
 export interface HeroSpecial {
   _id?: string
@@ -10,16 +10,16 @@ export interface HeroSpecial {
 export const HeroSpecialtiesMethod = {
   findOne: async (_id: string | string[]) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/hero-specialties/specialty/${_id}`)
+      const { data } = await useAPIPrivate().get(`/api/v1/hero-specialties/${_id}`)
       return data
     } catch (error: Error | any) {
       throw error.response
     }
   },
-  find: async (selector?: object) => {
+  find: async (selector: object) => {
     try {
-      const { data } = await useAPI().get(
-        `/api/v1/hero-specialties/${JSON.stringify(selector || {})}`
+      const { data } = await useAPIPrivate().get(
+        `/api/v1/hero-specialties?selector=${JSON.stringify(selector || {})}`
       )
       return data
     } catch (error: Error | any) {
