@@ -1,4 +1,4 @@
-import User from "../models/User";
+import User from "../models/Users";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -38,7 +38,6 @@ const authController = {
         first_name,
         last_name,
       });
-
       return res.sendStatus(201);
     } catch (error) {
       return res.status(400).json({ message: "Could not register" });

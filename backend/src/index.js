@@ -64,11 +64,12 @@ if (process.env.PROJECT_MODE === 'Production') {
 }
 
 // Routes
-import router from "./routes/api/auth";
+import authRouter from "./routes/api/auth";
 import heroRouter from "./routes/api/heroes"
 import heroRolesRouter from "./routes/api/hero_roles"
 import heroSpecialtiesRouter from "./routes/api/hero_specialties"
-app.use("/api/v1", router, heroRouter, heroRolesRouter, heroSpecialtiesRouter);
+import { userFixture } from "./fixtures/users";
+app.use("/api/v1", authRouter, heroRouter, heroRolesRouter, heroSpecialtiesRouter);
 
 // 404 Not Found
 app.all("*", (req, res) => {
@@ -79,8 +80,9 @@ app.all("*", (req, res) => {
 });
 
 
-mongoose.connection.once("open", () => {
+mongoose.connection.once("open", async () => {
   console.log(`🍃 MongoDB is connected`);
+  await userFixture()
   app.listen(PORT, () =>
     console.log(`🚀 Server ready at: http://localhost:${PORT}`)
   );
