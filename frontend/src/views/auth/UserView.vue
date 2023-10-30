@@ -3,7 +3,7 @@
     <div class="container">
       <Suspense>
         <template #default>
-          <div v-if="user" class="card card-body mt-5">
+          <div v-if="user" class="card card-body">
             <h5 class="card-title">Username: {{ user.username }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">Email: {{ user.email }}</h6>
             <h6 class="card-subtitle mb-2 text-muted">First Name: {{ user.first_name }}</h6>
@@ -12,7 +12,7 @@
           </div>
         </template>
         <template #fallback>
-          <div class="card card-body mt-5">
+          <div class="card card-body">
             <h5 class="card-title placeholder-glow">
               <span class="placeholder col-6"></span>
             </h5>

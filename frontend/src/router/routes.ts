@@ -14,12 +14,12 @@ const routes = [
     component: () => import('../views/auth/LoginView.vue'),
     meta: { requiresGuest: true }
   },
-  {
-    path: '/register',
-    name: 'register',
-    component: () => import('../views/auth/RegisterView.vue'),
-    meta: { requiresGuest: true }
-  },
+  // {
+  //   path: '/register',
+  //   name: 'register',
+  //   component: () => import('../views/auth/RegisterView.vue'),
+  //   meta: { requiresGuest: true }
+  // },
   {
     path: '/user',
     name: 'user',
@@ -115,6 +115,11 @@ const routes = [
         meta: { pageTitle: 'Edit', backBtn: true, requiresAuth: true }
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'routeChecker',
+    component: () => import('../views/NotFoundView.vue')
   }
 ]
 
