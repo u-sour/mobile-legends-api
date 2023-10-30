@@ -120,7 +120,7 @@
               'formkit-wrapper': false
             }"
             label="Release Year"
-            validation="required|date_after:2016-01-01"
+            validation="required|date_after:2015-12-31"
           />
         </div>
       </div>

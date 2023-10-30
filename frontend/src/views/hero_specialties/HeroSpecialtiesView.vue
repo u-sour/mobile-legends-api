@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5">
+  <div class="container">
     <!---- Header ---->
     <PageHeader>
       <button v-if="route.meta.createBtn" class="btn btn-primary" @click="create">Create</button>

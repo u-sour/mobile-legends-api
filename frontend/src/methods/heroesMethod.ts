@@ -122,7 +122,7 @@ export const HeroesMethod = {
   },
   findWithAggregate: async (selector?: object) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/heroes/pub/`)
+      const { data } = await useAPI().get(`/api/v1/heroes/public`)
       return data
     } catch (error: Error | any) {
       throw error.response

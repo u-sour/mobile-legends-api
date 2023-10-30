@@ -1,10 +1,9 @@
 <template>
-  <div id="login">
-    <div class="container">
-      <div class="card card-body mt-5">
+  <div id="login" class="min-h-inherit">
+    <div class="container min-h-inherit d-flex">
+      <div class="card card-body">
         <h5 class="card-title">Login</h5>
         <form @submit.prevent="submit">
-          <p v-if="errorMessage" class="error-message text-danger mb-4">{{ errorMessage }}</p>
           <div class="mb-3">
             <label for="email" class="form-label">Email address</label>
             <input
@@ -34,8 +33,9 @@
 
 <script setup lang="ts">
 import { type LoginData, useAuthStore } from '@/stores/auth'
-import { reactive, ref } from 'vue'
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify'
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -43,7 +43,6 @@ const form = reactive<LoginData>({
   email: '',
   password: ''
 })
-const errorMessage = ref<string>('')
 
 const submit = async () => {
   await authStore
@@ -52,14 +51,13 @@ const submit = async () => {
       router.replace({ name: 'user' })
     })
     .catch((err) => {
-      errorMessage.value = err.data.message
+      toast.error(err.data.message)
     })
 }
 </script>
 
 <style scoped>
 #login .card {
-  max-width: 40vw;
   margin: auto;
 }
 </style>

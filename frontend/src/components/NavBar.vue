@@ -1,20 +1,33 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav
+    class="navbar light-theme navbar-custom navbar-expand-lg bg-body-tertiary p-4"
+    :class="{ 'dark-theme': isDark }"
+  >
     <div class="container-xxl">
-      <RouterLink :to="{ name: 'home' }" class="navbar-brand"
-        ><img src="/favicon.ico" alt="mevn"
-      /></RouterLink>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#appNavbar"
-        aria-controls="appNavbar"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <RouterLink :to="{ name: 'home' }" class="navbar-brand">
+        <NavBarBrand></NavBarBrand>
+      </RouterLink>
+      <!--toggle button for mobile nav-->
+      <div class="d-flex align-items-center order-lg-2">
+        <button
+          class="navbar-toggler me-2"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#appNavbar"
+          aria-controls="appNavbar"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+          v-if="isAuthenticated"
+        >
+          <span
+            role="button"
+            class="navbar-toggler-btn-light"
+            :class="{ 'navbar-toggler-btn-dark': isDark }"
+            ><i class="bi bi-list" aria-hidden="true"></i
+          ></span>
+        </button>
+        <SwitchThemeBtn />
+      </div>
       <div class="collapse navbar-collapse" id="appNavbar">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item" v-for="route in getRoutes" :key="route.name">
@@ -45,16 +58,17 @@
             </ul>
           </li>
           <template v-else>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <RouterLink :to="{ name: 'login' }" class="nav-link active" aria-current="page"
-                >Login</RouterLink
+              >Login</RouterLink
               >
-            </li>
-            <li class="nav-item">
+            </li> -->
+            <!-- <li class="nav-item">
               <RouterLink :to="{ name: 'register' }" class="nav-link active" aria-current="page"
-                >Register</RouterLink
+              >Register</RouterLink
               >
-            </li>
+            </li> -->
+            <!-- <SwitchThemeBtn /> -->
           </template>
         </ul>
       </div>
@@ -67,7 +81,11 @@ import routes from '@/router/routes'
 import { useAuthStore } from '@/stores/auth'
 import { computed, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+import { useDark } from '@vueuse/core'
+import SwitchThemeBtn from './SwitchThemeBtn.vue'
+import NavBarBrand from './NavBarBrand.vue'
 
+const isDark = useDark()
 const router = useRouter()
 const authStore = useAuthStore()
 const username = computed(() => authStore.userDetail.username)
@@ -78,7 +96,6 @@ const getRoutes = ref<any>([])
 watchEffect(() => {
   getRoutes.value = routes.filter(
     (r) =>
-      r.name === 'home' ||
       (r.name === 'heroes' && isAuthenticated.value) ||
       (r.name === 'hero-roles' && isAuthenticated.value) ||
       (r.name === 'hero-specialties' && isAuthenticated.value)
@@ -93,4 +110,44 @@ const logout = async () => {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.light-theme {
+  background-color: var(--navbar-bg-color-light) !important;
+  font-family: var(--header-en-font);
+}
+.navbar-toggler-btn-light {
+  color: var(--secondary);
+  font-size: 1.5rem;
+}
+
+/* change the brand and text color */
+.light-theme .navbar-brand,
+.light-theme.navbar-text {
+  color: var(--navbar-text-color-light) !important;
+}
+
+/* change the link color */
+.light-theme .navbar-nav .nav-link {
+  color: var(--navbar-text-color-light) !important;
+}
+
+.dark-theme {
+  background-color: var(--navbar-bg-color-dark) !important;
+}
+
+.navbar-toggler-btn-dark {
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+/* change the brand and text color */
+.dark-theme .navbar-brand,
+.dark-theme.navbar-text {
+  color: var(--navbar-text-color-dark) !important;
+}
+
+/* change the link color */
+.dark-theme .navbar-nav .nav-link {
+  color: var(--navbar-text-color-dark) !important;
+}
+</style>

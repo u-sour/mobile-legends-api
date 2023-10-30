@@ -1,6 +1,12 @@
 <template>
   <div id="index-hero">
-    <FormKit type="text" prefix-icon="search" v-model="search" placeholder="Search..." />
+    <FormKit
+      type="text"
+      prefix-icon="search"
+      v-model="search"
+      placeholder="Search..."
+      autocomplete="off"
+    />
     <!-- <button class="btn btn-primary" @click="insertSimpleData">Simple Data</button> -->
 
     <EasyDataTable
@@ -76,7 +82,7 @@ const searchField = ['name', 'code']
 const search = ref()
 
 const router = useRouter()
-const loading = ref(true)
+const loading = ref(false)
 const headers: Header[] = [
   { text: 'NAME', value: 'name' },
   { text: 'CODE', value: 'code' },
@@ -89,6 +95,7 @@ const headers: Header[] = [
 
 const items = ref<Item[]>([])
 onMounted(async () => {
+  loading.value = true
   items.value = await HeroesMethod.find()
   loading.value = false
 })
