@@ -12,7 +12,6 @@ const heroesController = {
 
             if (hero.length > 1) {
                 index += hero.length
-                console.log("🚀 ~ file: heroesController.js:16 ~ count: ~ index:", index)
             }
 
             return res.status(200).json({ index: index });
@@ -43,7 +42,23 @@ const heroesController = {
     findAsPublic: async (req, res) => {
         try {
             const selector = {}
-            if (req.params.id) selector['_id'] = new ObjectId(req.params.id)
+            const { id } = req.params
+            const { search } = req.query
+            const queryRegx = new RegExp(search, 'i');
+
+            if (id) {
+                selector._id = new ObjectId(id)
+            } else {
+                selector.$or = [{
+                    code: { $regex: queryRegx }
+                },
+                {
+                    name: {
+                        $regex: queryRegx
+                    }
+                },]
+            }
+
             let pipeline = [
                 { $match: selector },
                 { $unwind: { path: "$roleIds", preserveNullAndEmptyArrays: true, } },
@@ -70,7 +85,7 @@ const heroesController = {
                         battle_points: { $last: "$battle_points" },
                         ticket: { $last: "$ticket" },
                         lucky_gem: { $last: "$lucky_gem" },
-                        skins: { $last: "$skins" },
+                        // skins: { $last: "$skins" },
                         skills: { $last: "$skills" },
                         base_attributes: { $last: "$base_attributes" },
                     }
@@ -99,13 +114,16 @@ const heroesController = {
                         battle_points: { $last: "$battle_points" },
                         ticket: { $last: "$ticket" },
                         lucky_gem: { $last: "$lucky_gem" },
-                        skins: { $last: "$skins" },
+                        // skins: { $last: "$skins" },
                         skills: { $last: "$skills" },
                         base_attributes: { $last: "$base_attributes" },
                     }
-                }
+                },
+                {
+                    $sort: { code: 1 },
+                },
             ]
-            const heroes = await Heroes.aggregate(pipeline)
+            const heroes = await Heroes.aggregate(pipeline).collation({ locale: "en_US", numericOrdering: true })
             return res.status(200).json(heroes);
         } catch (error) {
             console.log("🚀 ~ file: heroesController.js:85 ~ findWithAggregate: ~ error:", error)
@@ -159,7 +177,6 @@ const heroesController = {
                     }
                 }
             }
-            console.log("🚀 ~ file: heroesController.js:59 ~ edit: ~ differenceSkins:", differenceSkins)
 
             for (let index = 0; index < data.skins.length; index++) {
                 const skin = data.skins[index];

@@ -7,7 +7,6 @@
       placeholder="Search..."
       autocomplete="off"
     />
-    <!-- <button class="btn btn-primary" @click="insertSimpleData">Simple Data</button> -->
 
     <EasyDataTable
       show-index
@@ -76,12 +75,10 @@ import AlertMessage from '@/utils/alert-message'
 import ImageNotFound from '@/components/ImageNotFound.vue'
 import { useRouter } from 'vue-router'
 import { FormKit } from '@formkit/vue'
-// import data from '@/utils/simple-data.json'
-
-const searchField = ['name', 'code']
-const search = ref()
 
 const router = useRouter()
+const searchField = ['name', 'code']
+const search = ref()
 const loading = ref(false)
 const headers: Header[] = [
   { text: 'NAME', value: 'name' },
@@ -116,17 +113,6 @@ const deleteItem = async (val: Hero) => {
       toast.error(err.data.message)
     })
 }
-
-// const insertSimpleData = async () => {
-//   for (let index = 0; index < data.length; index++) {
-//     const d = data[index]
-//     try {
-//       await HeroesMethod.create(d)
-//     } catch (error) {
-//       console.log(error)
-//     }
-//   }
-// }
 </script>
 
 <style scoped></style>

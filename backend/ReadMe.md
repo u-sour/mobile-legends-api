@@ -10,7 +10,7 @@ you can find out what you need to know below.
 
 ## 🛠️ Customize configuration
 
-you must create an .env file to setup your environment variables ( you copy from .env.example ) so that's it you start your backend now.
+you must create .env file to setup your environment variables ( you can copy from .env.example ) so that's it you can run your backend now.
 
 ## 👨‍💻 Development
 

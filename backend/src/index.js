@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import path from "path";
 import corsOptions from "./config/cors";
 import connectMongoDB from "./config/database";
+import { userFixture } from "./fixtures/users";
 
 // middleware
 import credentials from "./middleware/credentials";
@@ -17,7 +18,7 @@ import authenticationMiddleware from "./middleware/authentication";
 
 const app = express();
 // default port
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 //connect to mongodb
 connectMongoDB();
@@ -66,10 +67,10 @@ if (process.env.PROJECT_MODE === 'Production') {
 // Routes
 import authRouter from "./routes/api/auth";
 import heroRouter from "./routes/api/heroes"
+import heroSkinsRotuer from "./routes/api/hero_skins"
 import heroRolesRouter from "./routes/api/hero_roles"
 import heroSpecialtiesRouter from "./routes/api/hero_specialties"
-import { userFixture } from "./fixtures/users";
-app.use("/api/v1", authRouter, heroRouter, heroRolesRouter, heroSpecialtiesRouter);
+app.use("/api/v1", authRouter, heroRouter, heroSkinsRotuer, heroRolesRouter, heroSpecialtiesRouter);
 
 // 404 Not Found
 app.all("*", (req, res) => {

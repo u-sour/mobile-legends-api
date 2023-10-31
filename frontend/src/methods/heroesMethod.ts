@@ -123,13 +123,18 @@ export const HeroesMethod = {
   findWithAggregate: async (selector?: object) => {
     try {
       const { data } = await useAPI().get(`/api/v1/heroes/public`)
+      // find hero skins
+      for (let index = 0; index < data.length; index++) {
+        const hero = data[index]
+        const heroSkin = await useAPI().get(`/api/v1/hero-skins/public/id/${hero._id}`)
+        hero.skins = heroSkin.data[0].skins
+      }
       return data
     } catch (error: Error | any) {
       throw error.response
     }
   },
   create: async (payload: Hero) => {
-    console.log('🚀 ~ file: heroesMethod.ts:72 ~ create: ~ payload:', payload)
     try {
       const { data } = await useAPIPrivate().post('/api/v1/heroes', payload)
       return data
