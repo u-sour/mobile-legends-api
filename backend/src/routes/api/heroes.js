@@ -8,9 +8,11 @@ const router = express.Router()
 let cache = apicache.middleware
 
 if (process.env.PROJECT_MODE === 'Production') {
+    router.get('/heroes/public/search', cache('5 minutes'), heroesController.findAsPublic)
     router.get('/heroes/public/id/:id', cache('5 minutes'), heroesController.findAsPublic)
     router.get('/heroes/public', cache('5 minutes'), heroesController.findAsPublic)
 } else {
+    router.get('/heroes/public/search', heroesController.findAsPublic)
     router.get('/heroes/public/id/:id', heroesController.findAsPublic)
     router.get('/heroes/public', heroesController.findAsPublic)
 }

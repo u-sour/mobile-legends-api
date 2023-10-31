@@ -84,13 +84,18 @@ const authController = {
     user.refresh_token = refreshToken;
     await user.save();
 
-    res.cookie("refresh_token", refreshToken, {
+    const cookieOptions = {
       httpOnly: true,
-      sameSite: "None",
-      secure: true,
+      secure: false,
       maxAge: 24 * 60 * 60 * 1000,
-    });
+    }
 
+    if (process.env.PROJECT_MODE === 'Production') {
+      cookieOptions.sameSite = "None"
+      cookieOptions.secure = true
+    }
+
+    res.cookie("refresh_token", refreshToken, cookieOptions);
     res.json({ access_token: accessToken });
   },
   logout: async (req, res) => {
@@ -100,24 +105,25 @@ const authController = {
 
     const refreshToken = cookies.refresh_token;
     const user = await User.findOne({ refresh_token: refreshToken }).exec();
+    const cookieOptions = {
+      httpOnly: true,
+      secure: false,
+    }
+
+    if (process.env.PROJECT_MODE === 'Production') {
+      cookieOptions.sameSite = "None"
+      cookieOptions.secure = true
+    }
 
     if (!user) {
-      res.clearCookie("refresh_token", {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-      });
+      res.clearCookie("refresh_token", cookieOptions);
       return res.sendStatus(204);
     }
 
     user.refresh_token = null;
     await user.save();
 
-    res.clearCookie("refresh_token", {
-      httpOnly: true,
-      sameSite: "None",
-      secure: true,
-    });
+    res.clearCookie("refresh_token", cookieOptions);
     res.sendStatus(204);
   },
   refresh: async (req, res) => {
