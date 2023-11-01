@@ -43,7 +43,7 @@ app.use(cookieParser());
 app.use(authenticationMiddleware);
 
 // Static Frontend File
-// app.use(express.static(path.resolve(__dirname, '../public')))
+app.use(express.static(path.resolve(__dirname, '../public')))
 
 // Default error
 app.use(errorHandlerMiddleware);
@@ -71,6 +71,13 @@ import heroSkinsRotuer from "./routes/api/hero_skins"
 import heroRolesRouter from "./routes/api/hero_roles"
 import heroSpecialtiesRouter from "./routes/api/hero_specialties"
 app.use("/api/v1", authRouter, heroRouter, heroSkinsRotuer, heroRolesRouter, heroSpecialtiesRouter);
+
+// Deployment
+// you must set * to catch all server route
+// read more: https://sentry.io/answers/why-don-t-react-router-urls-work-when-refreshing-or-writing-manually/
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'))
+})
 
 // 404 Not Found
 app.all("*", (req, res) => {
