@@ -32,28 +32,28 @@ onMounted(async () => {
   items.value = await HeroesMethod.findWithAggregate()
   loading.value = false
 })
-const domainName = 'http://localhost:5173'
+const domainName = import.meta.env.VITE_API_URI || 'http://localhost:5173'
 const apis = ref([
   {
     id: 'heroes',
     title: 'Heroes',
     endPoints: [
       {
-        name: 'Get Heroes by Search (Name, Code)',
+        name: 'Get heroes by search (name, code)',
         url: `${domainName}/api/v1/heroes/public/search/?search=miya`,
         type: 'Get',
         status: 'active',
         copied: false
       },
       {
-        name: 'Get Heroes by ID',
+        name: 'Get hero by id',
         url: `${domainName}/api/v1/heroes/public/id/653a7a89b806d40c256b12e2`,
         type: 'Get',
         status: 'active',
         copied: false
       },
       {
-        name: 'Get Heroes',
+        name: 'Get all heroes',
         url: `${domainName}/api/v1/heroes/public`,
         type: 'Get',
         status: 'active',
@@ -130,21 +130,21 @@ const apis = ref([
     title: 'Hero Skins',
     endPoints: [
       {
-        name: 'Get Hero Skins by Search (Name, Code)',
+        name: 'Get hero skins by search (name, code)',
         url: `${domainName}/api/v1/hero-skins/public/search/?search=miya`,
         type: 'Get',
         status: 'active',
         copied: false
       },
       {
-        name: 'Get Hero Skins by ID',
+        name: 'Get hero skin by id',
         url: `${domainName}/api/v1/hero-skins/public/id/653a7a89b806d40c256b12e2`,
         type: 'Get',
         status: 'active',
         copied: false
       },
       {
-        name: 'Get Hero Skins',
+        name: 'Get all hero skins',
         url: `${domainName}/api/v1/hero-skins/public`,
         type: 'Get',
         status: 'active',
@@ -177,14 +177,14 @@ const apis = ref([
     title: 'Hero Roles',
     endPoints: [
       {
-        name: 'Get Hero Roles by ID',
+        name: 'Get hero role by id',
         url: `${domainName}/api/v1/hero-roles/public/id/652fbbd137ea7f85db3f4223`,
         type: 'Get',
         status: 'active',
         copied: false
       },
       {
-        name: 'Get Hero Roles',
+        name: 'Get all hero roles',
         url: `${domainName}/api/v1/hero-roles/public`,
         type: 'Get',
         status: 'active',
@@ -208,14 +208,14 @@ const apis = ref([
     title: 'Hero Specialties',
     endPoints: [
       {
-        name: 'Get Hero Specialties by ID',
+        name: 'Get hero specialty by id',
         url: `${domainName}/api/v1/hero-specialties/public/id/653b529128cdd9c14aa89c1e`,
         type: 'Get',
         status: 'active',
         copied: false
       },
       {
-        name: 'Get Hero Specialties',
+        name: 'Get all hero specialties',
         url: `${domainName}/api/v1/hero-specialties/public`,
         type: 'Get',
         status: 'active',
@@ -262,14 +262,26 @@ const onCopy = (endPoint: any) => {
 
 <template>
   <div class="container">
-    <div class="col-lg-12 text-center">
-      <h1 class="header-title">Mobile Legends Bang Bang API</h1>
-      <div class="col-lg-12">
-        <p class="fs-1">
-          This is an unoffical rest api for all developers and it's
-          <span class="fw-bold">free</span> no <span class="fw-bold">sign up</span>. Currently it's
-          support fetching
-          <span id="pub-api" class=""></span>
+    <div class="col-12 mb-4">
+      <h1 class="header-title text-center my-5">Mobile Legends Bang Bang API</h1>
+      <div class="col-12">
+        <p class="fs-1">Overview</p>
+        <p class="fs-4">
+          I created this API as a case study project also can be used by any developer and it's
+          <span class="fw-bold">free</span> no <span class="fw-bold">sign up</span>. This API was
+          created with the aim of making it easier for programmers with any programming language to
+          test and learn the application being built.
+        </p>
+        <p class="fs-4">
+          This API is an unoffical so it mean data isn't updated in real time. If there is a data
+          error in this API, you can tell me
+          <a
+            href="mailto:yousour.dev@gmail.com"
+            class="link-color-light"
+            :class="{ 'link-color-dark': isDark }"
+            >here</a
+          >. Currently it's support fetching
+          <span id="pub-api" class="fw-bold"></span>
         </p>
       </div>
       <FormKit
@@ -306,37 +318,33 @@ const onCopy = (endPoint: any) => {
             <img
               v-if="skins.length > 0 && skins[0].icon_url"
               class="avatar-1 border rounded-circle"
-              :src="skins[0].icon_url"
               loading="lazy"
+              :role="skins[0].name"
               :alt="skins[0].name"
               :title="skins[0].name"
+              :src="skins[0].icon_url"
             />
             <ImageNotFound v-else />
           </div>
         </template>
         <template #item-roleIds="{ roleIds }">
-          <span v-for="role in roleIds" :key="role._id">
-            {{ role.name }}
-          </span>
+          <span v-for="(role, index) in roleIds" :key="role._id">
+            {{ role.name }}<span v-if="index !== roleIds.length - 1"> / </span></span
+          >
         </template>
         <template #item-specialtyIds="{ specialtyIds }">
-          <span v-for="specialty in specialtyIds" :key="specialty._id">
-            <template v-if="specialtyIds.length < 1">
-              {{ specialty.name }}
-            </template>
-            <template v-else> {{ specialty.name }}, </template>
-          </span>
+          <span v-for="(specialty, index) in specialtyIds" :key="specialty._id"
+            >{{ specialty.name }}<span v-if="index !== specialtyIds.length - 1"> / </span></span
+          >
         </template>
       </EasyDataTable>
     </div>
-    <hr />
-    <p class="fs-1">
-      <i class="bi bi-patch-check-fill available-icon-color"></i> Available Rest API Endpoints
-    </p>
+    <!--------------------------------------API Endpoints--------------------------------------->
+    <p class="fs-1">Available API Endpoints</p>
     <template v-for="api in apis" :key="api.title">
       <p class="fs-3 fw-bold mt-4">{{ api.title }}</p>
-      <div class="mb-4" v-for="endPoint in api.endPoints" :key="endPoint.name">
-        <span class="fs-6">{{ endPoint.name }}</span>
+      <div class="mb-3" v-for="endPoint in api.endPoints" :key="endPoint.name">
+        <p class="fs-5">{{ endPoint.name }}</p>
         <div class="card">
           <div class="card-body d-flex justify-content-between">
             <div>
@@ -355,7 +363,7 @@ const onCopy = (endPoint: any) => {
           </div>
         </div>
       </div>
-      <span>Response 200 application/json</span>
+      <p class="fs-5">Response 200 application/json</p>
       <div class="accordion" :id="`accordion${api.id}`">
         <div class="accordion-item">
           <p class="accordion-header">

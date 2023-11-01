@@ -28,16 +28,20 @@
               ><br />
               <img
                 class="avatar-1 border rounded-circle m-1"
-                :src="skin.icon_url"
                 loading="lazy"
-                alt=""
+                :role="skin.name"
+                :alt="skin.name"
+                :title="skin.name"
+                :src="skin.icon_url"
               />
               |
               <img
                 class="avatar-1 border rounded-1 m-1"
-                :src="skin.splash_art_url"
                 loading="lazy"
-                alt=""
+                :role="skin.name"
+                :alt="skin.name"
+                :title="skin.name"
+                :src="skin.splash_art_url"
               />
             </div>
           </div>
@@ -45,17 +49,14 @@
         <ImageNotFound v-else />
       </template>
       <template #item-roleIds="{ roleIds }">
-        <span v-for="role in roleIds" :key="role._id">
-          {{ role.name }}
-        </span>
+        <span v-for="(role, index) in roleIds" :key="role._id">
+          {{ role.name }}<span v-if="index !== roleIds.length - 1"> / </span></span
+        >
       </template>
       <template #item-specialtyIds="{ specialtyIds }">
-        <span v-for="specialty in specialtyIds" :key="specialty._id">
-          <template v-if="specialtyIds.length < 1">
-            {{ specialty.name }}
-          </template>
-          <template v-else> {{ specialty.name }}, </template>
-        </span>
+        <span v-for="(specialty, index) in specialtyIds" :key="specialty._id"
+          >{{ specialty.name }}<span v-if="index !== specialtyIds.length - 1"> / </span></span
+        >
       </template>
       <template #item-operation="item">
         <EasyDataTableActions @edit="editItem(item)" @delete="deleteItem(item)" />
@@ -93,7 +94,7 @@ const headers: Header[] = [
 const items = ref<Item[]>([])
 onMounted(async () => {
   loading.value = true
-  items.value = await HeroesMethod.find()
+  items.value = await HeroesMethod.findWithAggregate()
   loading.value = false
 })
 

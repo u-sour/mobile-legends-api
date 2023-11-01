@@ -32,26 +32,4 @@ const isDark = useDark()
 const years = moment().format('YYYY') !== '2023' ? `2023-${moment().format('YYYY')}` : '2023'
 </script>
 
-<style scoped>
-.link-color-light {
-  color: var(--primary) !important;
-  opacity: 0.7;
-  transition: ease 1s;
-}
-.link-color-light:hover,
-.link-color-light:active {
-  color: var(--primary) !important;
-  opacity: 1;
-}
-
-.link-color-dark {
-  color: var(--secondary) !important;
-  opacity: 0.7;
-  transition: ease 1s;
-}
-.link-color-dark:hover,
-.link-color-dark:active {
-  color: var(--secondary) !important;
-  opacity: 1;
-}
-</style>
+<style scoped></style>
