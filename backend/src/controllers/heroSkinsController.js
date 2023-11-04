@@ -26,7 +26,7 @@ const heroSkinsController = {
             }
             let serverTotalHeroesLength = await Heroes.find().count()
             const heroes = await Heroes.find(selector, { _id: 1, code: 1, name: 1, skins: 1 }).sort({ code: 1 }).collation({ locale: "en_US", numericOrdering: true }).skip((page - 1) * limit).limit(limit)
-            if (search || page || limit) serverTotalHeroesLength = heroes.length
+            if (search) serverTotalHeroesLength = heroes.length
             const data = { heroes, serverTotalHeroesLength }
             return res.status(200).json(data);
         } catch (error) {

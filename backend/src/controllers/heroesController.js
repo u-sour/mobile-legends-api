@@ -125,7 +125,7 @@ const heroesController = {
             ]
             let serverTotalHeroesLength = await Heroes.find().count()
             const heroes = page && limit ? await Heroes.aggregate(pipeline).collation({ locale: "en_US", numericOrdering: true }).skip((page - 1) * limit).limit(limit) : await Heroes.aggregate(pipeline).collation({ locale: "en_US", numericOrdering: true })
-            if (search || page || limit) serverTotalHeroesLength = heroes.length
+            if (search) serverTotalHeroesLength = heroes.length
             const data = { heroes, serverTotalHeroesLength }
             return res.status(200).json(data);
         } catch (error) {
