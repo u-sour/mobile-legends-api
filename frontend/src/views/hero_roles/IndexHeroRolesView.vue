@@ -1,6 +1,12 @@
 <template>
   <div id="index-hero-roles">
-    <EasyDataTable show-index :headers="headers" :items="items" :loading="loading">
+    <EasyDataTable
+      show-index
+      :headers="headers"
+      :items="items"
+      buttons-pagination
+      :loading="loading"
+    >
       <template #loading>
         <EasyDataTableLoading />
       </template>
@@ -51,7 +57,7 @@ const headers: Header[] = [
 const items = ref<Item[]>([])
 
 onMounted(async () => {
-  items.value = await HeroRolesMethod.find()
+  items.value = await HeroRolesMethod.find({})
   loading.value = false
 })
 

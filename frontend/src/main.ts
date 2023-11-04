@@ -15,6 +15,7 @@ import 'vue3-toastify/dist/index.css'
 import { ToasityConfig } from './config/toasity.config'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
+import { createHead } from '@unhead/vue'
 
 const app = createApp(App)
 
@@ -22,6 +23,7 @@ app.use(Vue3Toasity, ToasityConfig as ToastContainerOptions)
 app.component('EasyDataTable', Vue3EasyDataTable)
 app.use(createPinia())
 app.use(plugin, defaultConfig(config))
+app.use(createHead())
 authentication.install().then(() => {
   app.use(router)
   app.mount('#app')

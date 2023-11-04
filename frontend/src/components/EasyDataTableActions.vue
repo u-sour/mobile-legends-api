@@ -13,16 +13,17 @@
             cancel()
           }
         "
+        aria-label="yes-button"
       >
         Yes
       </button>
-      <button class="btn btn-light" @click="cancel">Cancel</button>
+      <button class="btn btn-light" @click="cancel" aria-label="cancel-button">Cancel</button>
     </template>
     <template v-else>
-      <button class="btn btn-warning me-1" @click="$emit('edit')">
+      <button class="btn btn-warning me-1" @click="$emit('edit')" aria-label="edit-button">
         <i class="bi bi-pencil-square"></i>
       </button>
-      <button class="btn btn-danger" @click="confirm">
+      <button class="btn btn-danger" @click="confirm" aria-label="delete-button">
         <i class="bi bi-trash"></i>
       </button>
     </template>

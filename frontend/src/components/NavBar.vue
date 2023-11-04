@@ -7,6 +7,7 @@
       <RouterLink :to="{ name: 'home' }" class="navbar-brand">
         <NavBarBrand></NavBarBrand>
       </RouterLink>
+      <!-- <h1 class="text-light">site {{ siteData }}</h1> -->
       <!--toggle button for mobile nav-->
       <div class="d-flex align-items-center order-lg-2">
         <button
@@ -79,27 +80,49 @@
 <script setup lang="ts">
 import routes from '@/router/routes'
 import { useAuthStore } from '@/stores/auth'
-import { computed, ref, watchEffect } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref, reactive, watchEffect } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useDark } from '@vueuse/core'
+import { useHead } from '@unhead/vue'
 import SwitchThemeBtn from './SwitchThemeBtn.vue'
 import NavBarBrand from './NavBarBrand.vue'
 
 const isDark = useDark()
 const router = useRouter()
+const dynamicRoutes = useRoute()
 const authStore = useAuthStore()
 const username = computed(() => authStore.userDetail.username)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 
 // get routes
 const getRoutes = ref<any>([])
+const siteData = reactive<any>({})
+
 watchEffect(() => {
+  siteData.title = dynamicRoutes.meta.title
+  siteData.description = dynamicRoutes.meta.description
   getRoutes.value = routes.filter(
     (r) =>
       (r.name === 'heroes' && isAuthenticated.value) ||
       (r.name === 'hero-roles' && isAuthenticated.value) ||
       (r.name === 'hero-specialties' && isAuthenticated.value)
   )
+})
+
+// meta tags for seo
+useHead({
+  title: computed(() => siteData.title),
+  meta: [
+    {
+      name: 'description',
+      content: computed(() => siteData.description)
+    },
+    {
+      name: 'keywords',
+      content:
+        'mlbb api, free mlbb api, free mobile legends api, free api, rapidapi, API ml, API Mobile Legends, API Hero ML, RestAPI, API Free, API Gratis, RestAPI Dummy, API Dummy, API Dummy Gratis'
+    }
+  ]
 })
 
 const logout = async () => {

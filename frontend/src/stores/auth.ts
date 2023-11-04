@@ -63,7 +63,6 @@ export const useAuthStore = defineStore('auth', {
     async register(payload: RegisterData) {
       try {
         const { data } = await useAPI().post(`/api/v1/auth/register`, payload)
-        this.accessToken = data?.access_token
         return data
       } catch (error: Error | any) {
         throw error.response

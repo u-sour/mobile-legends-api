@@ -1,5 +1,13 @@
 <template>
-  <img v-if="imgSrc" class="avatar-1 rounded-3 p-1" loading="lazy" :src="imgSrc" />
+  <img
+    v-if="imgSrc"
+    class="avatar-1 rounded-3 p-1"
+    loading="lazy"
+    :src="imgSrc"
+    :alt="imageFile![0].name"
+    :title="imageFile![0].name"
+    role="Presentation"
+  />
 </template>
 
 <script setup lang="ts">
