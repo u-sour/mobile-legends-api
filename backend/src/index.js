@@ -58,6 +58,7 @@ if (process.env.PROJECT_MODE === 'Production') {
     message: `Too many requests, please try again later after ${ms} minutes`,
     standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    skip: (req, res) => req.path.startsWith('/'), // skip is true for slack, false for all else
   })
 
   // Apply the rate limiting middleware to all requests
