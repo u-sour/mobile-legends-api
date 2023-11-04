@@ -7,7 +7,7 @@ const router = createRouter({
   routes: routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeResolve(async (to, from, next) => {
   const authStore = useAuthStore()
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
     // else if route user want to enter require guest & user already login login it will go to home page
     return next({ name: 'home' })
   } else {
-    next()
+    return next()
   }
 })
 

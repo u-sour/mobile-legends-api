@@ -1,6 +1,12 @@
 <template>
   <div id="index-hero-specialties">
-    <EasyDataTable show-index :headers="headers" :items="items" :loading="loading">
+    <EasyDataTable
+      show-index
+      :headers="headers"
+      :items="items"
+      buttons-pagination
+      :loading="loading"
+    >
       <template #loading>
         <EasyDataTableLoading />
       </template>
@@ -46,7 +52,7 @@ const headers: Header[] = [
 const items = ref<Item[]>([])
 
 onMounted(async () => {
-  items.value = await HeroSpecialtiesMethod.find()
+  items.value = await HeroSpecialtiesMethod.find({})
   loading.value = false
 })
 

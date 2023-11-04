@@ -120,14 +120,19 @@ export const HeroesMethod = {
       throw error.response
     }
   },
-  findWithAggregate: async (selector?: object) => {
+  findWithAggregate: async (selector: { search?: string; page: number; rowsPerPage: number }) => {
     try {
-      const { data } = await useAPI().get(`/api/v1/heroes/public`)
+      const { search, page, rowsPerPage } = selector
+      const { data } = await useAPI().get(
+        search
+          ? `/api/v1/heroes/public?search=${search}&page=${page}&limit=${rowsPerPage}`
+          : `/api/v1/heroes/public?page=${page}&limit=${rowsPerPage}`
+      )
       // find hero skins
-      for (let index = 0; index < data.length; index++) {
-        const hero = data[index]
+      for (let index = 0; index < data.heroes.length; index++) {
+        const hero = data.heroes[index]
         const heroSkin = await useAPI().get(`/api/v1/hero-skins/public/id/${hero._id}`)
-        hero.skins = heroSkin.data[0].skins
+        hero.skins = heroSkin.data.heroes[0].skins
       }
       return data
     } catch (error: Error | any) {

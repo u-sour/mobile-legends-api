@@ -1,19 +1,21 @@
 <template>
   <div id="index-hero">
-    <FormKit
-      type="text"
-      prefix-icon="search"
-      v-model="search"
-      placeholder="Search..."
-      autocomplete="off"
-    />
-
+    <form @submit.prevent="search">
+      <FormKit
+        type="text"
+        prefix-icon="search"
+        v-model="searchValue"
+        placeholder="Search..."
+        autocomplete="off"
+      />
+    </form>
     <EasyDataTable
       show-index
       :headers="headers"
       :items="items"
-      :search-field="searchField"
-      :search-value="search"
+      buttons-pagination
+      v-model:server-options="serverOptions"
+      :server-items-length="serverItemsLength"
       :loading="loading"
     >
       <template #loading>
@@ -66,21 +68,28 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { Header, Item } from 'vue3-easy-data-table'
+import { watch, ref } from 'vue'
+import type { Header, Item, ServerOptions } from 'vue3-easy-data-table'
 import { type Hero, HeroesMethod } from '@/methods/heroesMethod'
 import EasyDataTableLoading from '@/components/EasyDataTableLoading.vue'
 import EasyDataTableActions from '@/components/EasyDataTableActions.vue'
 import { toast } from 'vue3-toastify'
 import AlertMessage from '@/utils/alert-message'
 import ImageNotFound from '@/components/ImageNotFound.vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { FormKit } from '@formkit/vue'
 
+const route = useRoute()
 const router = useRouter()
-const searchField = ['name', 'code']
-const search = ref()
 const loading = ref(false)
+const searchValue = ref()
+const serverItemsLength = ref(0)
+const { page, limit } = route.query
+const serverOptions = ref<ServerOptions>({
+  page: parseInt(page?.toString() || '1'),
+  rowsPerPage: parseInt(limit?.toString() || '25')
+})
+
 const headers: Header[] = [
   { text: 'NAME', value: 'name' },
   { text: 'CODE', value: 'code' },
@@ -92,11 +101,39 @@ const headers: Header[] = [
 ]
 
 const items = ref<Item[]>([])
-onMounted(async () => {
+const loadFromServer = async () => {
   loading.value = true
-  items.value = await HeroesMethod.findWithAggregate()
+  const { page, rowsPerPage } = serverOptions.value
+  router.replace({
+    name: 'heroes',
+    query: searchValue.value
+      ? { search: searchValue.value, page: page, limit: rowsPerPage }
+      : { page: page, limit: rowsPerPage }
+  })
+  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregate({
+    search: searchValue.value,
+    page,
+    rowsPerPage
+  })
+  items.value = heroes
+  serverItemsLength.value = serverTotalHeroesLength
   loading.value = false
-})
+}
+
+// initial load
+loadFromServer()
+
+watch(
+  serverOptions,
+  () => {
+    loadFromServer()
+  },
+  { deep: true }
+)
+
+const search = () => {
+  loadFromServer()
+}
 
 const editItem = (val: Hero) => {
   router.push({ name: 'edit.heroes', params: { id: val._id } })

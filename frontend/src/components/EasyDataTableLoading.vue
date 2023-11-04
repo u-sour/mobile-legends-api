@@ -17,6 +17,6 @@ const isDark = useDark()
 }
 
 .spinner-color-dark {
-  color: var(--secondary);
+  color: var(--primary);
 }
 </style>

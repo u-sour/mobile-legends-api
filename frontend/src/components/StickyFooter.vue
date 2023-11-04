@@ -19,6 +19,7 @@
         target="_blank"
         class="link-color-light fs-1"
         :class="{ 'link-color-dark': isDark }"
+        aria-label="https://github.com/u-sour"
         ><i class="bi bi-github"></i
       ></a>
     </div>

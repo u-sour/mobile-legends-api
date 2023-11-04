@@ -1,6 +1,12 @@
 <template>
   <label class="switch">
-    <input class="toggle" type="checkbox" @click="toggleDark()" :checked="isDark" />
+    <input
+      class="toggle"
+      type="checkbox"
+      @click="toggleDark()"
+      :checked="isDark"
+      aria-label="toggle-theme"
+    />
     <span class="slider"></span>
     <span class="card-side"></span>
   </label>

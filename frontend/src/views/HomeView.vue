@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import type { Header, Item } from 'vue3-easy-data-table'
-import { TxtAnime } from 'txtanime.js'
-import { onMounted, ref } from 'vue'
+import type { Header, Item, ServerOptions } from 'vue3-easy-data-table'
+import VueWriter from 'vue-writer'
+import { ref, watch } from 'vue'
 import { HeroesMethod } from '@/methods/heroesMethod'
 import EasyDataTableLoading from '@/components/EasyDataTableLoading.vue'
 import { useDark } from '@vueuse/core'
 import ImageNotFound from '@/components/ImageNotFound.vue'
+import { useRouter, useRoute } from 'vue-router'
 
+const route = useRoute()
+const router = useRouter()
 const isDark = useDark()
-const searchField = ['name', 'code']
-const search = ref()
 const loading = ref(false)
+const searchValue = ref()
+const serverItemsLength = ref(0)
+const { page, limit } = route.query
+const serverOptions = ref<ServerOptions>({
+  page: parseInt(page?.toString() || '1'),
+  rowsPerPage: parseInt(limit?.toString() || '25')
+})
 
 const headers: Header[] = [
   { text: 'Hero', value: 'skins' },
@@ -23,15 +31,41 @@ const headers: Header[] = [
 ]
 const items = ref<Item[]>([])
 
-onMounted(async () => {
-  new TxtAnime('#pub-api', {
-    effect: 'txt-an-7',
-    text: ['Heroes.', 'Hero Skins.', 'Hero Roles.', 'Hero Specailties.']
-  })
+const loadFromServer = async () => {
   loading.value = true
-  items.value = await HeroesMethod.findWithAggregate()
+  const { page, rowsPerPage } = serverOptions.value
+  router.replace({
+    name: 'home',
+    query: searchValue.value
+      ? { search: searchValue.value, page: page, limit: rowsPerPage }
+      : { page: page, limit: rowsPerPage }
+  })
+  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregate({
+    search: searchValue.value,
+    page,
+    rowsPerPage
+  })
+  items.value = heroes
+  serverItemsLength.value = serverTotalHeroesLength
   loading.value = false
-})
+}
+
+// initial load
+loadFromServer()
+
+watch(
+  serverOptions,
+  () => {
+    loadFromServer()
+  },
+  { deep: true }
+)
+
+const search = () => {
+  // console.log('searching ...')
+  // console.log(searchValue.value)
+  loadFromServer()
+}
 const domainName = import.meta.env.VITE_API_URI || 'http://localhost:5173'
 const apis = ref([
   {
@@ -39,8 +73,15 @@ const apis = ref([
     title: 'Heroes',
     endPoints: [
       {
-        name: 'Get heroes by search (name, code)',
+        name: 'Get heroes by search (hero name or code)',
         url: `${domainName}/api/v1/heroes/public/search/?search=miya`,
+        type: 'Get',
+        status: 'active',
+        copied: false
+      },
+      {
+        name: 'Get heroes by search (hero name or code) with pagination',
+        url: `${domainName}/api/v1/heroes/public/search/?search=miya&page=1&limit=25`,
         type: 'Get',
         status: 'active',
         copied: false
@@ -60,78 +101,88 @@ const apis = ref([
         copied: false
       }
     ],
-    response: [
-      {
-        _id: '653a7a89b806d40c256b12e2',
-        code: '1',
-        name: 'Miya',
-        roleIds: [],
-        specialtyIds: [],
-        lane: 'Gold Laner',
-        release_year: '2016',
-        battle_points: '10800',
-        ticket: '399',
-        lucky_gem: '',
-        // skins: [
-        //   {
-        //     name: '',
-        //     icon_public_id: '',
-        //     icon_url: '',
-        //     icon_file_name: '',
-        //     splash_art_public_id: '',
-        //     splash_art_url: '',
-        //     splash_art_file_name: '',
-        //     status: '',
-        //     _id: ''
-        //   }
-        // ],
-        skills: [
-          {
-            skill_name: '',
-            skill_icon: '',
-            type: '',
-            cooldown: '',
-            manacost: '',
-            description: ''
-          }
-        ],
-        base_attributes: [
-          {
-            movement_speed: '',
-            physical_attack: '',
-            physical_defense: '',
-            physical_lifesteal: '',
-            physical_penetration: '',
-            magic_attack: '',
-            magic_power: '',
-            magic_penetration: '',
-            magic_lifesteal: '',
-            spell_vamp: '',
-            magic_resistance: '',
-            hp: '',
-            mana: '',
-            attack_speed: '',
-            hp_regen_rate: '',
-            mana_regen_rate: '',
-            critical_strike_chance: '',
-            critical_damage: '',
-            cd_reduction: '',
-            bs_cd_reduction: '',
-            healing_effect: '',
-            monster_damage_reduction: '',
-            monster_damage: ''
-          }
-        ]
-      }
-    ]
+    response: {
+      serverTotalHeroesLength: 1,
+      heroes: [
+        {
+          _id: '653a7a89b806d40c256b12e2',
+          code: '1',
+          name: 'Miya',
+          roleIds: [],
+          specialtyIds: [],
+          lane: 'Gold Laner',
+          release_year: '2016',
+          battle_points: '10800',
+          ticket: '399',
+          lucky_gem: '',
+          // skins: [
+          //   {
+          //     name: '',
+          //     icon_public_id: '',
+          //     icon_url: '',
+          //     icon_file_name: '',
+          //     splash_art_public_id: '',
+          //     splash_art_url: '',
+          //     splash_art_file_name: '',
+          //     status: '',
+          //     _id: ''
+          //   }
+          // ],
+          skills: [
+            {
+              skill_name: '',
+              skill_icon: '',
+              type: '',
+              cooldown: '',
+              manacost: '',
+              description: ''
+            }
+          ],
+          base_attributes: [
+            {
+              movement_speed: '',
+              physical_attack: '',
+              physical_defense: '',
+              physical_lifesteal: '',
+              physical_penetration: '',
+              magic_attack: '',
+              magic_power: '',
+              magic_penetration: '',
+              magic_lifesteal: '',
+              spell_vamp: '',
+              magic_resistance: '',
+              hp: '',
+              mana: '',
+              attack_speed: '',
+              hp_regen_rate: '',
+              mana_regen_rate: '',
+              critical_strike_chance: '',
+              critical_damage: '',
+              cd_reduction: '',
+              bs_cd_reduction: '',
+              healing_effect: '',
+              monster_damage_reduction: '',
+              monster_damage: ''
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     id: 'hero-skins',
     title: 'Hero Skins',
     endPoints: [
       {
-        name: 'Get hero skins by search (name, code)',
+        name: 'Get hero skins by search (hero name or code)',
         url: `${domainName}/api/v1/hero-skins/public/search/?search=miya`,
+        type: 'Get',
+        status: 'active',
+        copied: false
+      },
+      {
+        name: 'Get hero skins by search (hero name or code) with pagination',
+        url: `${domainName}/api/v1/hero-skins/public/search/?search=miya&page=1&limit=25`,
         type: 'Get',
         status: 'active',
         copied: false
@@ -151,26 +202,29 @@ const apis = ref([
         copied: false
       }
     ],
-    response: [
-      {
-        _id: '653a7a89b806d40c256b12e2',
-        code: '1',
-        name: 'Miya',
-        skins: [
-          {
-            name: '',
-            icon_public_id: '',
-            icon_url: '',
-            icon_file_name: '',
-            splash_art_public_id: '',
-            splash_art_url: '',
-            splash_art_file_name: '',
-            status: '',
-            _id: ''
-          }
-        ]
-      }
-    ]
+    response: {
+      serverTotalHeroesLength: 1,
+      heroes: [
+        {
+          _id: '653a7a89b806d40c256b12e2',
+          code: '1',
+          name: 'Miya',
+          skins: [
+            {
+              name: '',
+              icon_public_id: '',
+              icon_url: '',
+              icon_file_name: '',
+              splash_art_public_id: '',
+              splash_art_url: '',
+              splash_art_file_name: '',
+              status: '',
+              _id: ''
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     id: 'hero-roles',
@@ -280,12 +334,20 @@ const onCopy = (endPoint: any) => {
             class="link-color-light"
             :class="{ 'link-color-dark': isDark }"
             >here</a
-          >. Currently it's support fetching
-          <span id="pub-api" class="fw-bold"></span>
+          >.
+          <span class="d-lg-flex d-md-flex d-sm-inline">
+            Currently it's support fetching&nbsp;
+            <VueWriter
+              :array="['Heroes.', 'Hero Skins.', 'Hero Roles.', 'Hero Specailties.']"
+              class="fw-bold"
+              :eraseSpeed="50"
+              :typeSpeed="100"
+            />
+          </span>
         </p>
       </div>
       <FormKit
-        type="text"
+        type="search"
         prefix-icon="search"
         :wrapper-class="{
           'formkit-wrapper': false
@@ -296,7 +358,11 @@ const onCopy = (endPoint: any) => {
           'search-inner-dark': isDark
         }"
         :input-class="{ 'search-input-light': !isDark, 'search-input-dark': isDark }"
-        v-model="search"
+        :style="
+          !isDark ? '--clear-icon-color: var(--primary)' : '--clear-icon-color:var(--secondary)'
+        "
+        v-model.lazy="searchValue"
+        @change="search"
         placeholder="Search..."
         autocomplete="off"
       />
@@ -306,8 +372,8 @@ const onCopy = (endPoint: any) => {
         :items="items"
         buttons-pagination
         theme-color="#231f20"
-        :search-field="searchField"
-        :search-value="search"
+        v-model:server-options="serverOptions"
+        :server-items-length="serverItemsLength"
         :loading="loading"
       >
         <template #loading>
@@ -319,7 +385,8 @@ const onCopy = (endPoint: any) => {
               v-if="skins.length > 0 && skins[0].icon_url"
               class="avatar-1 border rounded-circle"
               loading="lazy"
-              :role="skins[0].name"
+              role="img"
+              :aria-describedby="skins[0].name"
               :alt="skins[0].name"
               :title="skins[0].name"
               :src="skins[0].icon_url"
@@ -348,7 +415,7 @@ const onCopy = (endPoint: any) => {
         <div class="card">
           <div class="card-body d-flex justify-content-between">
             <div>
-              <span class="badge text-bg-success end-point-type">{{ endPoint.type }}</span
+              <span class="badge text-bg-success fs-6 text-uppercase">{{ endPoint.type }}</span
               >&nbsp;
               <span class="text-break">{{ endPoint.url }}</span>
             </div>
@@ -403,7 +470,6 @@ const onCopy = (endPoint: any) => {
 .copied-icon-color {
   color: var(--success);
 }
-
 .text-bg-success {
   background-color: var(--success) !important;
 }
@@ -413,7 +479,6 @@ const onCopy = (endPoint: any) => {
   border-color: rgba(0, 0, 0, 0.125);
   font-weight: normal;
 }
-
 .accordion-button:not(.collapsed) {
   color: var(--primary);
   box-shadow: none;
