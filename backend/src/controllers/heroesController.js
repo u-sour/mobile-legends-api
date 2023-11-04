@@ -43,8 +43,10 @@ const heroesController = {
         try {
             const selector = {}
             const { id } = req.params
-            const { search } = req.query
+            let { search, page, limit } = req.query
             const queryRegx = new RegExp(search, 'i');
+            page = parseInt(page)
+            limit = parseInt(limit)
 
             if (id) {
                 selector._id = new ObjectId(id)
@@ -119,12 +121,15 @@ const heroesController = {
                         base_attributes: { $last: "$base_attributes" },
                     }
                 },
-                {
-                    $sort: { code: 1 },
-                },
+                { $sort: { code: 1 } },
+                { $skip: (page - 1) * limit },
+                { $limit: limit }
             ]
+            let serverTotalHeroesLength = await Heroes.find().count()
             const heroes = await Heroes.aggregate(pipeline).collation({ locale: "en_US", numericOrdering: true })
-            return res.status(200).json(heroes);
+            if (search) serverTotalHeroesLength = heroes.length
+            const data = { heroes, serverTotalHeroesLength }
+            return res.status(200).json(data);
         } catch (error) {
             console.log("🚀 ~ file: heroesController.js:85 ~ findWithAggregate: ~ error:", error)
             return res.status(400).json({ message: error });
