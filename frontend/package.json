@@ -13,6 +13,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@cloudinary/url-gen": "^1.12.0",
+    "@cloudinary/vue": "^1.11.2",
     "@formkit/auto-animate": "^0.8.0",
     "@formkit/icons": "^1.2.2",
     "@formkit/themes": "^1.2.2",

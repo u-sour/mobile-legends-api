@@ -5,6 +5,7 @@ import { ref, watch } from 'vue'
 import { HeroesMethod } from '@/methods/heroesMethod'
 import EasyDataTableLoading from '@/components/EasyDataTableLoading.vue'
 import { useDark } from '@vueuse/core'
+import CloudImage from '@/components/CloudImage.vue'
 import ImageNotFound from '@/components/ImageNotFound.vue'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -40,7 +41,7 @@ const loadFromServer = async () => {
       ? { search: searchValue.value, page: page, limit: rowsPerPage }
       : { page: page, limit: rowsPerPage }
   })
-  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregate({
+  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregateForHome({
     search: searchValue.value,
     page,
     rowsPerPage
@@ -62,8 +63,6 @@ watch(
 )
 
 const search = () => {
-  // console.log('searching ...')
-  // console.log(searchValue.value)
   loadFromServer()
 }
 const domainName = import.meta.env.VITE_API_URI || 'http://localhost:5173'
@@ -381,15 +380,11 @@ const onCopy = (endPoint: any) => {
         </template>
         <template #item-skins="{ skins }">
           <div class="p-1">
-            <img
-              v-if="skins.length > 0 && skins[0].icon_url"
-              class="avatar-1 border rounded-circle"
-              loading="lazy"
-              role="img"
-              :aria-describedby="skins[0].name"
-              :alt="skins[0].name"
-              :title="skins[0].name"
-              :src="skins[0].icon_url"
+            <CloudImage
+              :public-id="skins.icon_public_id"
+              :name="skins.name"
+              class="avatar-1 border border-2 rounded-circle"
+              v-if="skins && skins.icon_public_id"
             />
             <ImageNotFound v-else />
           </div>

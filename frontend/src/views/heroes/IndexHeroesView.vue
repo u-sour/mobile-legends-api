@@ -28,22 +28,16 @@
               <span class="badge text-bg-light fs-6 mt-2"
                 ><i class="bi bi-shop"></i> {{ skin.name }}</span
               ><br />
-              <img
-                class="avatar-1 border rounded-circle m-1"
-                loading="lazy"
-                :role="skin.name"
-                :alt="skin.name"
-                :title="skin.name"
-                :src="skin.icon_url"
+              <CloudImage
+                :public-id="skin.icon_public_id"
+                :name="skin.name"
+                class="avatar-1 border border-2 rounded-circle"
               />
               |
-              <img
+              <CloudImage
+                :public-id="skin.splash_art_public_id"
+                :name="skin.name"
                 class="avatar-1 border rounded-1 m-1"
-                loading="lazy"
-                :role="skin.name"
-                :alt="skin.name"
-                :title="skin.name"
-                :src="skin.splash_art_url"
               />
             </div>
           </div>
@@ -75,6 +69,7 @@ import EasyDataTableLoading from '@/components/EasyDataTableLoading.vue'
 import EasyDataTableActions from '@/components/EasyDataTableActions.vue'
 import { toast } from 'vue3-toastify'
 import AlertMessage from '@/utils/alert-message'
+import CloudImage from '@/components/CloudImage.vue'
 import ImageNotFound from '@/components/ImageNotFound.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { FormKit } from '@formkit/vue'
