@@ -105,7 +105,7 @@ const loadFromServer = async () => {
       ? { search: searchValue.value, page: page, limit: rowsPerPage }
       : { page: page, limit: rowsPerPage }
   })
-  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregate({
+  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregateNoRateLimit({
     search: searchValue.value,
     page,
     rowsPerPage

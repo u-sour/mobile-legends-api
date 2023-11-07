@@ -16,7 +16,6 @@ const heroesController = {
 
             return res.status(200).json({ index: index });
         } catch (error) {
-            console.log("🚀 ~ file: heroesController.js:21 ~ count: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -35,7 +34,6 @@ const heroesController = {
             const heroes = await Heroes.find(selector)
             return res.status(200).json(heroes);
         } catch (error) {
-            console.log("🚀 ~ file: heroesController.js:22 ~ find: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -129,7 +127,6 @@ const heroesController = {
             const data = { heroes, serverTotalHeroesLength }
             return res.status(200).json(data);
         } catch (error) {
-            console.log("🚀 ~ file: heroesController.js:85 ~ findWithAggregate: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -154,7 +151,6 @@ const heroesController = {
             await Heroes.create(data)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroesController.js:28 ~ create: ~ error:", error)
             return res.status(400).json({ message: error });
         }
 
@@ -203,7 +199,6 @@ const heroesController = {
             await Heroes.findByIdAndUpdate(_id, data)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroesController.js:92 ~ edit: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -222,7 +217,6 @@ const heroesController = {
             await Heroes.findByIdAndDelete(_id)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroesController.js:110 ~ delete: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
