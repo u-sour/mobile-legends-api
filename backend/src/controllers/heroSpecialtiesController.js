@@ -50,7 +50,6 @@ const heroSpecialtiesController = {
             await HeroSpecialties.findByIdAndUpdate(_id, data)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroSpecialtiesController.js:40 ~ edit: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -62,7 +61,6 @@ const heroSpecialtiesController = {
             await HeroSpecialties.findByIdAndDelete(_id)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroSpecialtiesController.js:49 ~ delete: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
