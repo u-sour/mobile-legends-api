@@ -14,18 +14,31 @@ const heroSkinsController = {
 
             if (id) {
                 selector._id = new ObjectId(id)
-            } else {
+            }
+
+            if (search) {
                 selector.$or = [{
                     code: { $regex: queryRegx }
                 },
                 {
-                    name: {
-                        $regex: queryRegx
-                    }
+                    name: { $regex: queryRegx }
                 },]
             }
+
+            const pipeline = [
+                {
+                    $project: {
+                        _id: 1,
+                        code: 1,
+                        name: 1,
+                        skins: 1,
+                    }
+                },
+                { $sort: { code: 1 } }
+            ]
+
             let serverTotalHeroesLength = await Heroes.find().count()
-            const heroes = await Heroes.find(selector, { _id: 1, code: 1, name: 1, skins: 1 }).sort({ code: 1 }).collation({ locale: "en_US", numericOrdering: true }).skip((page - 1) * limit).limit(limit)
+            const heroes = page && limit ? await Heroes.aggregate(pipeline).allowDiskUse(true).collation({ locale: "en_US", numericOrdering: true }).skip((page - 1) * limit).limit(limit).match(selector) : await Heroes.aggregate(pipeline).allowDiskUse(true).collation({ locale: "en_US", numericOrdering: true }).match(selector)
             if (search) serverTotalHeroesLength = heroes.length
             const data = { heroes, serverTotalHeroesLength }
             return res.status(200).json(data);
