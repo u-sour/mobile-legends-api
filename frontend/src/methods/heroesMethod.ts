@@ -120,18 +120,23 @@ export const HeroesMethod = {
       throw error.response
     }
   },
-  findWithAggregate: async (selector: { search?: string; page: number; rowsPerPage: number }) => {
+  findWithAggregateNoRateLimit: async (selector: {
+    search?: string
+    page: number
+    rowsPerPage: number
+  }) => {
     try {
+      const apiPrefix = import.meta.env.VITE_API_NO_RATE_LIMIT_ROUTE
       const { search, page, rowsPerPage } = selector
       const { data } = await useAPI().get(
         search
-          ? `/api/v1/heroes/public?search=${search}&page=${page}&limit=${rowsPerPage}`
-          : `/api/v1/heroes/public?page=${page}&limit=${rowsPerPage}`
+          ? `${apiPrefix}/heroes/public?search=${search}&page=${page}&limit=${rowsPerPage}`
+          : `${apiPrefix}/heroes/public?page=${page}&limit=${rowsPerPage}`
       )
       // find hero skins
       for (let index = 0; index < data.heroes.length; index++) {
         const hero = data.heroes[index]
-        const heroSkin = await useAPI().get(`/api/v1/hero-skins/public/id/${hero._id}`)
+        const heroSkin = await useAPI().get(`${apiPrefix}/hero-skins/public/id/${hero._id}`)
         // get all skins by hero _id
         hero.skins = heroSkin.data.heroes[0].skins
       }
@@ -140,7 +145,7 @@ export const HeroesMethod = {
       throw error.response
     }
   },
-  findWithAggregateNoRateLimit: async (selector: {
+  findWithAggregateNoRateLimitForHome: async (selector: {
     search?: string
     page: number
     rowsPerPage: number
