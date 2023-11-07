@@ -30,7 +30,6 @@ const heroRolesController = {
             const heroRoles = await HeroRoles.find(selector, { __v: 0, created_at: 0, updated_at: 0 })
             return res.status(200).json(heroRoles);
         } catch (error) {
-            console.log("🚀 ~ file: heroRolesController.js:30 ~ findAsPublic: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -44,7 +43,6 @@ const heroRolesController = {
             await HeroRoles.create(data)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroRolesController.js:33 ~ create: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -66,7 +64,6 @@ const heroRolesController = {
             await HeroRoles.findByIdAndUpdate(_id, data)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroRolesController.js:40 ~ edit: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },
@@ -81,7 +78,6 @@ const heroRolesController = {
             await HeroRoles.findByIdAndDelete(_id)
             return res.sendStatus(201);
         } catch (error) {
-            console.log("🚀 ~ file: heroRolesController.js:49 ~ delete: ~ error:", error)
             return res.status(400).json({ message: error });
         }
     },

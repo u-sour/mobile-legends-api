@@ -41,7 +41,7 @@ const loadFromServer = async () => {
       ? { search: searchValue.value, page: page, limit: rowsPerPage }
       : { page: page, limit: rowsPerPage }
   })
-  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregateForHome({
+  const { heroes, serverTotalHeroesLength } = await HeroesMethod.findWithAggregateNoRateLimit({
     search: searchValue.value,
     page,
     rowsPerPage
@@ -327,7 +327,7 @@ const onCopy = (endPoint: any) => {
         </p>
         <p class="fs-4">
           This API is an unoffical so it mean data isn't updated in real time. If there is a data
-          error in this API, you can tell me
+          error in this API, contact me
           <a
             href="mailto:yousour.dev@gmail.com"
             class="link-color-light"

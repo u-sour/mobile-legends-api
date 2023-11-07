@@ -48,21 +48,24 @@ app.use(express.static(path.resolve(__dirname, '../public')))
 // Default error
 app.use(errorHandlerMiddleware);
 
+// api prefix
+const apiPrefix = "/api/v1"
+const apiNoRateLimitPrefix = process.env.API_NO_RATE_LIMIT_ROUTE
+
 // Rate limiting
 if (process.env.PROJECT_MODE === 'Production') {
-  const ms = 10;
-  const limit = 60;
+  const ms = 3;
+  const limit = 100;
   const limiter = rateLimit({
-    windowMs: ms * 60 * 1000, // 10 minutes
-    limit: limit, // Limit each IP to 60 requests per `window` (here, per 10 minutes)
+    windowMs: ms * 60 * 1000, // 3 minutes
+    limit: limit, // Limit each IP to 100 requests per `window` (here, per 3 minutes)
     message: `Too many requests, please try again later after ${ms} minutes`,
     standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    skip: (req, res) => req.path.startsWith('/'), // skip is true for /, false for all else
+    legacyHeaders: false // Disable the `X-RateLimit-*` headers
   })
 
-  // Apply the rate limiting middleware to all requests
-  app.use(limiter)
+  // Apply the rate limiting middleware to all requests that start with apiPrefix
+  app.use(apiPrefix, limiter)
 }
 
 // Routes
@@ -71,7 +74,9 @@ import heroRouter from "./routes/api/heroes"
 import heroSkinsRotuer from "./routes/api/hero_skins"
 import heroRolesRouter from "./routes/api/hero_roles"
 import heroSpecialtiesRouter from "./routes/api/hero_specialties"
-app.use("/api/v1", authRouter, heroRouter, heroSkinsRotuer, heroRolesRouter, heroSpecialtiesRouter);
+app.use(apiPrefix, authRouter, heroRouter, heroSkinsRotuer, heroRolesRouter, heroSpecialtiesRouter);
+// Routes for frontend
+app.use(apiNoRateLimitPrefix, heroRouter, heroSkinsRotuer);
 
 // Deployment
 // you must set * to catch all server route
@@ -87,7 +92,6 @@ app.all("*", (req, res) => {
     ? res.json({ error: "404 Not Found" })
     : res.type("text").send("404 Not Found");
 });
-
 
 mongoose.connection.once("open", async () => {
   console.log(`🍃 MongoDB is connected`);
