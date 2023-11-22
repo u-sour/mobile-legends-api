@@ -6,7 +6,7 @@ const origins = [
   "http://localhost:5174",
   "http://192.168.1.13:5174",
   "https://mlbb-api.onrender.com",
-  "https://mlbb-api.vercel.app"
+  "https://mlbb-api-v1.vercel.app"
 ];
 
 export default origins;
