@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Header, Item, ServerOptions } from 'vue3-easy-data-table'
-import VueWriter from 'vue-writer'
+import VTypical from 'vue-typical'
 import { ref, watch } from 'vue'
 import { HeroesMethod } from '@/methods/heroesMethod'
 import EasyDataTableLoading from '@/components/EasyDataTableLoading.vue'
@@ -335,14 +335,23 @@ const onCopy = (endPoint: any) => {
             :class="{ 'link-color-dark': isDark }"
             >here</a
           >.
-          <span class="d-lg-flex d-md-flex d-sm-inline">
+          <span class="d-lg-flex d-md-flex">
             Currently it's support fetching&nbsp;
-            <VueWriter
-              :array="['Heroes.', 'Hero Skins.', 'Hero Roles.', 'Hero Specailties.']"
-              class="fw-bold"
-              :eraseSpeed="50"
-              :typeSpeed="100"
-            />
+            <v-typical
+              class="blink"
+              :steps="[
+                'Heroes.',
+                1000,
+                'Hero Skins.',
+                1000,
+                'Hero Roles.',
+                1000,
+                'Hero Specailties.',
+                1000
+              ]"
+              :loop="Infinity"
+              :wrapper="'h2'"
+            ></v-typical>
           </span>
         </p>
       </div>
