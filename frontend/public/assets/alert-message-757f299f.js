@@ -1,0 +1,1 @@
+const s={createSuccess:"Document has been created.",editSuccess:"Document has been edited.",deleteConfirm:"Confirmation: Are you sure?",deleteSuccess:e=>`Document (${e}) has been deleted.`},t=s;export{t as A};
