@@ -20,7 +20,7 @@ export default ({ mode = '' }) => {
         '/api': {
           target: process.env.VITE_API_URI,
           changeOrigin: true,
-          secure: false
+          secure: true
         }
       }
     },
